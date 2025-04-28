@@ -19,6 +19,11 @@ module.exports = {
     },
     extend: {
       colors: {
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        bgPrimary: 'var(--color-bg-primary)',
+        bgSecondary: 'var(--color-bgSecondary)',
+        tBase: 'var(--color-tBase)',
         cyan: '#9cdbff',
       },
       spacing: {

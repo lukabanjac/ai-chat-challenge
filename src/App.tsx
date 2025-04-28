@@ -1,14 +1,18 @@
 // App.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import Groq from 'groq-sdk';
 
-import AppName from './components/AppName';
-import Button from './components/Button';
 import Chat from './components/Chat';
-import Headings from './components/Headings';
-import SearchBar from './components/SearchBar';
 import { useState } from 'react';
+import { MainWrapper } from './components/MainWrapper';
+import HeadingWrapper from './components/HeadingWrapper';
+import FooterWrapper from './components/FooterWrapper';
+import InputContainer from './components/InputContainer';
+import { ChatboxTextarea } from './components/ChatboxTextarea';
+import ContentWrapper from './components/ContentWrapper';
+import ReactMarkdown from 'react-markdown';
+import { ThemeBtn } from './components/ThemeBtn';
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -36,6 +40,12 @@ const App = () => {
     }
     return JSON.parse(localValue);
   });
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to the bottom when messages change
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [state]);
 
   useEffect(() => {
     localStorage.setItem('appState', JSON.stringify(state));
@@ -111,52 +121,45 @@ const App = () => {
   };
 
   return (
-    <>
-      <AppName>
-        <div>
+    <MainWrapper>
+      <HeadingWrapper>
+        <div className="text-3xl font-heading">
           <span>Lux</span>ChatBot
         </div>
-      </AppName>
-      <div>
-        <Headings>
-          <div>
-            <h1>Hi, Welcome.</h1>
-          </div>
-          <div>
-            <h3>How can I help you today?</h3>
-          </div>
-        </Headings>
-      </div>
+      </HeadingWrapper>
 
       {/* CHAT CONTAINER */}
-      <div className="chat-container">
+      <ContentWrapper>
         <Chat>
           {state.chatMessages.map((message, index) => (
-            <div key={index} className="chatConversations">
-              <div className="chat-prompt">{message.prompt}</div>
-              <div className="chat-response">{message.response}</div>
+            <div key={index} className="gap-10">
+              <div className="flex justify-end w-full">
+                <div className="chat-bubble bg-neutral-900 text-neutral-300 rounded-[99px] p-3 max-w-[70%]">
+                  {message.prompt.substring(5)}
+                </div>
+              </div>
+              <div className="flex justify-start w-full text-neutral-300">
+                <div className="chat-bubble">
+                  <ReactMarkdown>{message.response}</ReactMarkdown>
+                </div>
+              </div>
+              <div ref={bottomRef} />
             </div>
           ))}
-          <Button textContent="Clear Chat" handleClick={handleClearChat} />
+          {/* <Button textContent="Clear Chat" handleClick={handleClearChat} /> */}
         </Chat>
-      </div>
+      </ContentWrapper>
 
       {/* SEARCH BAR CONTAINER */}
-      <div className="searchBar-container">
-        <SearchBar>
-          <textarea
-            className="search-input"
-            placeholder="Enter your text"
-            value={state.inputValue}
-            // Use the handleInputChange function
-            onChange={handleInputChange}
-            // Use the handleKeyDown function
-            onKeyDown={handleKeyDown}
-          />
-          <Button textContent="Send" handleClick={handleSend} />
-        </SearchBar>
-      </div>
-    </>
+      <FooterWrapper>
+        <ChatboxTextarea
+          placeholder="Enter your text"
+          value={state.inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+        ></ChatboxTextarea>
+      </FooterWrapper>
+    </MainWrapper>
   );
 };
 

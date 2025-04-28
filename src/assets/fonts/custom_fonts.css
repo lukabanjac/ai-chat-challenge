@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'Tarrget3DRegular';
+  src:
+    local('Tarrget3DRegular'),
+    url('Tarrget3DRegular.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}

@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+
+@layer base {
+  :root {
+    --color-primary: hsl(0, 0%, 0%);
+    --color-secondary: hsl(0, 0%, 50%);
+    --color-text-base: hsl(0, 0%, 100%);
+    --color-bg-primary: hsl(0, 0%, 23%);
+  }
+}
+
+.theme-black {
+  --color-primary: hsl(0, 0%, 0%);
+  --color-secondary: hsl(0, 0%, 50%);
+}
+
+.theme-orange {
+  --color-primary: hsl(25, 100%, 50%);
+  --color-secondary: hsl(25, 100%, 75%);
+}
