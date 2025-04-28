@@ -8,22 +8,28 @@ import { useState } from 'react';
 import { MainWrapper } from './components/MainWrapper';
 import HeadingWrapper from './components/HeadingWrapper';
 import FooterWrapper from './components/FooterWrapper';
-import InputContainer from './components/InputContainer';
 import { ChatboxTextarea } from './components/ChatboxTextarea';
 import ContentWrapper from './components/ContentWrapper';
 import ReactMarkdown from 'react-markdown';
-import { ThemeBtn } from './components/ThemeBtn';
 import Timestamp from './components/Timestamp';
+import { Dropdown } from './components/DropdownButton';
+import { ModelListResponse } from 'groq-sdk/resources.mjs';
+import { FloatingLabelContainer } from './components/FloatingLabelContainer';
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
   dangerouslyAllowBrowser: true,
 });
+const getModels = async () => {
+  return await groq.models.list();
+};
 
 interface ChatMessage {
   prompt: string;
   response: string;
   timestamp: Date;
+  model: string;
+  error: string;
 }
 
 interface AppState {
@@ -43,6 +49,13 @@ const App = () => {
     return JSON.parse(localValue);
   });
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const [models, setModels] = useState<ModelListResponse>();
+  const [selectedModel, setSelectedModel] = useState('llama3-8b-8192');
+
+  useEffect(() => {
+    getModels().then((res) => setModels(res));
+  }, []);
 
   useEffect(() => {
     // Scroll to the bottom when messages change
@@ -84,7 +97,7 @@ const App = () => {
             content: state.inputValue,
           },
         ],
-        model: 'llama3-8b-8192',
+        model: selectedModel,
       });
 
       const responseContent =
@@ -94,6 +107,8 @@ const App = () => {
         prompt: chatPrompt,
         response: responseContent,
         timestamp: new Date(),
+        model: selectedModel,
+        error: '',
       };
 
       setState((prevState) => ({
@@ -106,8 +121,10 @@ const App = () => {
       const errorMessage = 'Error fetching chat completion';
       const newChatMessage: ChatMessage = {
         prompt: chatPrompt,
-        response: errorMessage,
+        response: '',
         timestamp: new Date(),
+        model: selectedModel,
+        error: errorMessage,
       };
       setState((prevState) => ({
         ...prevState,
@@ -119,7 +136,7 @@ const App = () => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault(); // Prevent the default action (newline)
+      event.preventDefault();
       handleSend();
     }
   };
@@ -127,8 +144,13 @@ const App = () => {
   return (
     <MainWrapper>
       <HeadingWrapper>
-        <div className="text-3xl font-heading">
-          <span>Lux</span>ChatBot
+        <div className="flex flex-col text-3xl text-center font-heading">
+          <span>LuxChatBot</span>
+          <Dropdown
+            defaultOption={selectedModel}
+            options={models}
+            onSelect={(option) => setSelectedModel(option)}
+          />
         </div>
       </HeadingWrapper>
 
@@ -143,11 +165,18 @@ const App = () => {
                   {message.prompt.substring(5)}
                 </div>
               </div>
-              <div className="flex justify-start w-full text-neutral-300">
-                <div className="chat-bubble">
-                  <ReactMarkdown>{message.response}</ReactMarkdown>
+              <FloatingLabelContainer
+                label={message.model}
+                isError={!!message.error}
+              >
+                <div className="flex justify-start w-full text-neutral-300">
+                  <div className="chat-bubble">
+                    <ReactMarkdown>
+                      {message.response ? message.response : message.error}
+                    </ReactMarkdown>
+                  </div>
                 </div>
-              </div>
+              </FloatingLabelContainer>
               <div ref={bottomRef} />
             </div>
           ))}
