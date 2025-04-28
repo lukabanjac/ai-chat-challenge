@@ -1,5 +1,5 @@
 // App.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Groq from 'groq-sdk';
 
@@ -20,25 +20,56 @@ interface ChatMessage {
   response: string;
 }
 
+interface AppState {
+  inputValue: string;
+  chatMessages: ChatMessage[];
+}
+
 const App = () => {
-  const [inputValue, setInputValue] = useState('');
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [state, setState] = useState<AppState>(() => {
+    const localValue = localStorage.getItem('appState');
+    if (localValue === null) {
+      return {
+        inputValue: '',
+        chatMessages: [],
+      };
+    }
+    return JSON.parse(localValue);
+  });
+
+  useEffect(() => {
+    localStorage.setItem('appState', JSON.stringify(state));
+  }, [state]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(event.target.value);
+    setState((prevState) => ({
+      ...prevState,
+      inputValue: event.target.value,
+    }));
+  };
+
+  const handleClearChat = () => {
+    setState((prevState) => ({
+      ...prevState,
+      chatMessages: [],
+      inputValue: '',
+    }));
+
+    // Remove chat history from localStorage
+    localStorage.removeItem('appState');
   };
 
   const handleSend = async () => {
-    if (inputValue.trim() === '') return;
+    if (state.inputValue.trim() === '') return;
 
-    const chatPrompt = `You: ${inputValue}`;
+    const chatPrompt = `You: ${state.inputValue}`;
 
     try {
       const chatCompletion = await groq.chat.completions.create({
         messages: [
           {
             role: 'user',
-            content: inputValue,
+            content: state.inputValue,
           },
         ],
         model: 'llama3-8b-8192',
@@ -52,7 +83,11 @@ const App = () => {
         response: responseContent,
       };
 
-      setChatMessages([...chatMessages, newChatMessage]);
+      setState((prevState) => ({
+        ...prevState,
+        chatMessages: [...prevState.chatMessages, newChatMessage],
+        inputValue: '',
+      }));
     } catch (error) {
       console.error('Error fetching chat completion:', error);
       const errorMessage = 'Error fetching chat completion';
@@ -60,9 +95,11 @@ const App = () => {
         prompt: chatPrompt,
         response: errorMessage,
       };
-      setChatMessages([...chatMessages, newChatMessage]);
-    } finally {
-      setInputValue('');
+      setState((prevState) => ({
+        ...prevState,
+        chatMessages: [...prevState.chatMessages, newChatMessage],
+        inputValue: '',
+      }));
     }
   };
 
@@ -90,24 +127,30 @@ const App = () => {
           </div>
         </Headings>
       </div>
+
+      {/* CHAT CONTAINER */}
       <div className="chat-container">
         <Chat>
-          {/* Render chat messages */}
-          {chatMessages.map((message, index) => (
-            <div key={index} className="chat-message">
+          {state.chatMessages.map((message, index) => (
+            <div key={index} className="chatConversations">
               <div className="chat-prompt">{message.prompt}</div>
               <div className="chat-response">{message.response}</div>
             </div>
           ))}
+          <Button textContent="Clear Chat" handleClick={handleClearChat} />
         </Chat>
       </div>
+
+      {/* SEARCH BAR CONTAINER */}
       <div className="searchBar-container">
         <SearchBar>
           <textarea
             className="search-input"
             placeholder="Enter your text"
-            value={inputValue}
+            value={state.inputValue}
+            // Use the handleInputChange function
             onChange={handleInputChange}
+            // Use the handleKeyDown function
             onKeyDown={handleKeyDown}
           />
           <Button textContent="Send" handleClick={handleSend} />
