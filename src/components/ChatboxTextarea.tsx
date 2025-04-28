@@ -1,11 +1,11 @@
 // ChatboxTextarea.tsx
-import { IconButton, Textarea } from '@material-tailwind/react';
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 
 interface ChatboxTextareaProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onKeyDown: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
+  onClear: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   placeholder?: string;
   className?: string;
 }
@@ -14,6 +14,7 @@ export const ChatboxTextarea = ({
   value,
   onChange,
   onKeyDown,
+  onClear,
   placeholder = 'Enter your text',
   className = '',
 }: ChatboxTextareaProps) => {
@@ -28,6 +29,11 @@ export const ChatboxTextarea = ({
         className="min-h-full w-full !border-0  text-neutral-300 resize-none focus:outline-none focus:ring-0 appearance-none"
       />
       <div>
+        <button className="rounded-full" onClick={onClear}>
+          ×
+        </button>
+      </div>
+      <div>
         <button className="rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -36,6 +42,8 @@ export const ChatboxTextarea = ({
             stroke="currentColor"
             strokeWidth={2}
             className="h-5 w-5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
             <path
               strokeLinecap="round"

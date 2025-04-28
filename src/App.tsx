@@ -13,6 +13,7 @@ import { ChatboxTextarea } from './components/ChatboxTextarea';
 import ContentWrapper from './components/ContentWrapper';
 import ReactMarkdown from 'react-markdown';
 import { ThemeBtn } from './components/ThemeBtn';
+import Timestamp from './components/Timestamp';
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_GROQ_API_KEY,
@@ -22,6 +23,7 @@ const groq = new Groq({
 interface ChatMessage {
   prompt: string;
   response: string;
+  timestamp: Date;
 }
 
 interface AppState {
@@ -91,6 +93,7 @@ const App = () => {
       const newChatMessage: ChatMessage = {
         prompt: chatPrompt,
         response: responseContent,
+        timestamp: new Date(),
       };
 
       setState((prevState) => ({
@@ -104,6 +107,7 @@ const App = () => {
       const newChatMessage: ChatMessage = {
         prompt: chatPrompt,
         response: errorMessage,
+        timestamp: new Date(),
       };
       setState((prevState) => ({
         ...prevState,
@@ -133,7 +137,8 @@ const App = () => {
         <Chat>
           {state.chatMessages.map((message, index) => (
             <div key={index} className="gap-10">
-              <div className="flex justify-end w-full">
+              <Timestamp timestamp={message.timestamp} />
+              <div className="flex justify-end w-full mb-3">
                 <div className="chat-bubble bg-neutral-900 text-neutral-300 rounded-[99px] p-3 max-w-[70%]">
                   {message.prompt.substring(5)}
                 </div>
@@ -146,7 +151,6 @@ const App = () => {
               <div ref={bottomRef} />
             </div>
           ))}
-          {/* <Button textContent="Clear Chat" handleClick={handleClearChat} /> */}
         </Chat>
       </ContentWrapper>
 
@@ -157,6 +161,7 @@ const App = () => {
           value={state.inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
+          onClear={handleClearChat}
         ></ChatboxTextarea>
       </FooterWrapper>
     </MainWrapper>
