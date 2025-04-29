@@ -1,5 +1,6 @@
 // ChatboxTextarea.tsx
 import React, { ChangeEvent, KeyboardEvent } from 'react';
+import Loader from '../assets/svg/blocks-shuffle-3.svg';
 
 interface ChatboxTextareaProps {
   value: string;
@@ -8,6 +9,7 @@ interface ChatboxTextareaProps {
   onClear: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   placeholder?: string;
   className?: string;
+  loading: boolean;
 }
 
 export const ChatboxTextarea = ({
@@ -17,9 +19,13 @@ export const ChatboxTextarea = ({
   onClear,
   placeholder = 'Enter your text',
   className = '',
+  loading = false,
 }: ChatboxTextareaProps) => {
   return (
     <div className="flex max-w-[70%] w-full max-w-5xl flex-row items-center gap-2 rounded-[99px] border border-neutral-900 bg-neutral-800 p-2 px-5 mx-auto">
+      {loading ? (
+        <img src={Loader} alt="Close" className="w-4 h-4 fill-neutral-300" />
+      ) : null}
       <textarea
         rows={1}
         value={value}

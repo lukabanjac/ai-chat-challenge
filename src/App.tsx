@@ -12,7 +12,7 @@ import { ChatboxTextarea } from './components/ChatboxTextarea';
 import ContentWrapper from './components/ContentWrapper';
 import ReactMarkdown from 'react-markdown';
 import Timestamp from './components/Timestamp';
-import { Dropdown } from './components/DropdownButton';
+import { Dropdown } from './components/Dropdown';
 import { ModelListResponse } from 'groq-sdk/resources.mjs';
 import { FloatingLabelContainer } from './components/FloatingLabelContainer';
 
@@ -23,6 +23,7 @@ const groq = new Groq({
 const getModels = async () => {
   return await groq.models.list();
 };
+const DEFAULT_MODEL = 'llama3-8b-8192';
 
 interface ChatMessage {
   prompt: string;
@@ -51,7 +52,8 @@ const App = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const [models, setModels] = useState<ModelListResponse>();
-  const [selectedModel, setSelectedModel] = useState('llama3-8b-8192');
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getModels().then((res) => setModels(res));
@@ -90,6 +92,7 @@ const App = () => {
     const chatPrompt = `You: ${state.inputValue}`;
 
     try {
+      setLoading(true);
       const chatCompletion = await groq.chat.completions.create({
         messages: [
           {
@@ -131,6 +134,8 @@ const App = () => {
         chatMessages: [...prevState.chatMessages, newChatMessage],
         inputValue: '',
       }));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,11 +151,6 @@ const App = () => {
       <HeadingWrapper>
         <div className="flex flex-col text-3xl text-center font-heading">
           <span>LuxChatBot</span>
-          <Dropdown
-            defaultOption={selectedModel}
-            options={models}
-            onSelect={(option) => setSelectedModel(option)}
-          />
         </div>
       </HeadingWrapper>
 
@@ -191,7 +191,15 @@ const App = () => {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onClear={handleClearChat}
+          loading={loading}
         ></ChatboxTextarea>
+        <div className="w-full">
+          <Dropdown
+            defaultOption={selectedModel}
+            options={models}
+            onSelect={(option) => setSelectedModel(option)}
+          />
+        </div>
       </FooterWrapper>
     </MainWrapper>
   );

@@ -42,18 +42,21 @@ export const Dropdown: React.FC<DropdownProps> = ({
   };
 
   return (
-    <div ref={dropdownRef} className="relative inline-block text-left w-48">
+    <div
+      ref={dropdownRef}
+      className="relative flex mx-auto text-left max-w-[400px]"
+    >
       {/* Button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full bg-neutral-600 border border-neutral-300 rounded-md shadow-sm px-4 py-2 text-sm text-neutral-300 hover:bg-neutral-200 hover:text-neutral-800 cursor-pointer focus:outline-none"
+        className="mx-auto bg-neutral-800 border border-neutral-900 rounded-b-full shadow-sm px-8 py-2 text-sm text-neutral-600 hover:bg-neutral-500 hover:text-neutral-800 cursor-pointer focus:outline-none"
       >
         {selected ?? placeholder}
       </button>
 
       {/* Options */}
       {isOpen && (
-        <div className="absolute mt-1 w-full max-h-[200px] overflow-x-scroll rounded-md bg-neutral-400 shadow-lg border border-neutral-200 z-10">
+        <div className="absolute top-[-200px] mt-1 w-full max-h-[200px] overflow-x-scroll rounded-md bg-neutral-500 shadow-lg border border-neutral-400 z-10">
           <ul className="py-1">
             {options?.data.map((option) => (
               <li

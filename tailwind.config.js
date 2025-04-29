@@ -30,6 +30,15 @@ module.exports = {
         96: '24rem',
         128: '32rem',
       },
+      keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '-100% 0' },
+          '100%': { backgroundPosition: '100% 0' },
+        },
+      },
+      animation: {
+        shimmer: 'shimmer 2s infinite linear',
+      },
     },
   },
 };
