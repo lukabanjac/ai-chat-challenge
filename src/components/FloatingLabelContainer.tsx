@@ -24,7 +24,7 @@ export const FloatingLabelContainer: React.FC<FloatingLabelContainerProps> = ({
       <div
         className={`absolute -top-2 left-4 rounded-full  ${isError ? 'bg-amber-700' : 'bg-neutral-700'} px-2 text-xs ${isError ? 'text-amber-500' : 'text-neutral-500'}`}
       >
-        {isError ? 'MODEL ERROR ' : ''}
+        {isError ? <span className="font-bold">ERROR </span> : ''}
         {label}
       </div>
     </div>
