@@ -35,7 +35,6 @@ export const ChatboxTextarea = ({
         placeholder={placeholder}
         className="min-h-full w-full !border-0  text-neutral-300 resize-none focus:outline-none focus:ring-0 appearance-none"
       />
-      <div></div>
       <div>
         <button
           className="rounded-full p-3 hover:bg-neutral-600 hover:cursor-pointer"
