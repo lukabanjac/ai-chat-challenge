@@ -1,5 +1,5 @@
-// tailwind.config.js
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
   theme: {
     screens: {
       sm: '640px',
@@ -8,8 +8,7 @@ module.exports = {
       xl: '1280px',
     },
     fontFamily: {
-      display: ['Gilroy', 'sans-serif'],
-      body: ['Graphik', 'sans-serif'],
+      scoreboard: ['ScoreboardItalic', 'sans-serif'],
     },
     borderWidth: {
       default: '1px',

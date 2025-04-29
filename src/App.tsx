@@ -39,6 +39,8 @@ interface AppState {
 }
 
 const App = () => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
   const [state, setState] = useState<AppState>(() => {
     const localValue = localStorage.getItem('appState');
     if (localValue === null) {
@@ -49,24 +51,38 @@ const App = () => {
     }
     return JSON.parse(localValue);
   });
-  const bottomRef = useRef<HTMLDivElement>(null);
-
   const [models, setModels] = useState<ModelListResponse>();
   const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const [loading, setLoading] = useState(false);
 
+  // Fetch all available Groq models
   useEffect(() => {
     getModels().then((res) => setModels(res));
   }, []);
 
+  // Scroll to the bottom when messages change
   useEffect(() => {
-    // Scroll to the bottom when messages change
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [state]);
 
+  // Save the current app state to localstorage
   useEffect(() => {
     localStorage.setItem('appState', JSON.stringify(state));
   }, [state]);
+
+  // On Esc Press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClearChat();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setState((prevState) => ({
@@ -149,8 +165,18 @@ const App = () => {
   return (
     <MainWrapper>
       <HeadingWrapper>
-        <div className="flex flex-col text-3xl text-center font-heading">
-          <span>LuxChatBot</span>
+        <div className="flex flex-col text-center font-tarrget">
+          <span className="font-[TyphoonItalic] text-5xl md:text-7xl">
+            LuxChatBot{'>>>'}
+          </span>
+          {state.chatMessages.length > 0 ? (
+            <button
+              className="rounded-full border border-solid border-neutral-900 hover:bg-neutral-600 cursor-pointer"
+              onClick={handleClearChat}
+            >
+              clear chat
+            </button>
+          ) : null}
         </div>
       </HeadingWrapper>
 
@@ -190,7 +216,7 @@ const App = () => {
           value={state.inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onClear={handleClearChat}
+          handleSend={handleSend}
           loading={loading}
         ></ChatboxTextarea>
         <div className="w-full">

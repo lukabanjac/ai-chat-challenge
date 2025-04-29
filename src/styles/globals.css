@@ -1,3 +1,4 @@
+@import url('../assets/fonts/custom_fonts.css');
 @import 'tailwindcss';
 
 @layer base {
@@ -17,4 +18,11 @@
 .theme-orange {
   --color-primary: hsl(25, 100%, 50%);
   --color-secondary: hsl(25, 100%, 75%);
+}
+
+@font-face {
+  font-family: 'Tarrget3DRegular';
+  src: url('../assets/fonts/Tarrget3DRegular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
 }

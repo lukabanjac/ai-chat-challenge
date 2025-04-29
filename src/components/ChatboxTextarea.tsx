@@ -6,7 +6,7 @@ interface ChatboxTextareaProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   onKeyDown: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
-  onClear: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  handleSend: () => void;
   placeholder?: string;
   className?: string;
   loading: boolean;
@@ -16,13 +16,13 @@ export const ChatboxTextarea = ({
   value,
   onChange,
   onKeyDown,
-  onClear,
+  handleSend,
   placeholder = 'Enter your text',
   className = '',
   loading = false,
 }: ChatboxTextareaProps) => {
   return (
-    <div className="flex max-w-[70%] w-full max-w-5xl flex-row items-center gap-2 rounded-[99px] border border-neutral-900 bg-neutral-800 p-2 px-5 mx-auto">
+    <div className="flex max-w-[70%] w-full flex-row items-center gap-2 rounded-[99px] border border-neutral-900 bg-neutral-800 py-2 pl-5 pr-2 mx-auto">
       {loading ? (
         <img src={Loader} alt="Close" className="w-4 h-4 fill-neutral-300" />
       ) : null}
@@ -34,13 +34,12 @@ export const ChatboxTextarea = ({
         placeholder={placeholder}
         className="min-h-full w-full !border-0  text-neutral-300 resize-none focus:outline-none focus:ring-0 appearance-none"
       />
+      <div></div>
       <div>
-        <button className="rounded-full" onClick={onClear}>
-          ×
-        </button>
-      </div>
-      <div>
-        <button className="rounded-full">
+        <button
+          className="rounded-full p-3 hover:bg-neutral-600 hover:cursor-pointer"
+          onClick={(e) => handleSend()}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
